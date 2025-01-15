@@ -14,3 +14,16 @@ It's still a work in progress, and has slightly different keybindings.
 | `Ctrl+Alt+L` | Git log search using fzf               |
 | `Ctrl+Alt+T` | Git status search using fzf            |
 | `Ctrl+V`     | Environment variables search using fzf |
+
+## Dependencies
+
+### Required
+
+- [fzf](https://github.com/junegunn/fzf)
+
+### Optional
+
+- [chafa](https://github.com/hpjansson/chafa) - Image preview
+- [bat](https://github.com/sharkdp/bat) - cat with syntax highlighting
+- [fd](https://github.com/sharkdp/fd) - Alternative to `find`
+- [eza](https://github.com/eza-community/eza) - Alternative to `ls`
