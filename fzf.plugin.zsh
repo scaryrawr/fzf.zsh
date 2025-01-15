@@ -103,7 +103,7 @@ fzf-git-status-widget() {
 }
 
 zle -N fzf-git-status-widget
-bindkey '^[^T' fzf-git-status-widget  # ctrl+alt+s
+bindkey '^[^T' fzf-git-status-widget  # ctrl+alt+t
 
 fzf-variables-widget() {
   local selected_variable
