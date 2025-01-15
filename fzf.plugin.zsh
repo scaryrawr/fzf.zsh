@@ -119,4 +119,4 @@ fzf-variables-widget() {
 }
 
 zle -N fzf-variables-widget
-bindkey '^V' fzf-variables-widget  # ctrl+shift+f
+bindkey '^V' fzf-variables-widget  # ctrl+v
