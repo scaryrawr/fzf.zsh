@@ -1,17 +1,14 @@
 0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 
+SCRIPT_DIR="$(dirname "$0")"
+
 # Override for zsh integration
 autoload -Uz compinit && compinit
 autoload -Uz bashcompinit && bashcompinit
 
 export FZF_DEFAULT_OPTS="--ansi"
-
-if command -v bat > /dev/null 2>&1; then
-  export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-bat --style=numbers --color=always --line-range :500}"
-else
-  export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-cat}"
-fi
+export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-$SCRIPT_DIR/fzf_preview}"
 
 fzf_find_files() {
   if command -v fd > /dev/null 2>&1; then
@@ -60,14 +57,11 @@ bindkey '^[[A' fzf-history-widget
 # Directory search using fzf
 fzf-cd-widget() {
   local selected_dir
-  if command -v fd > /dev/null 2>&1; then
-    selected_dir=$(fd --type d --color=always | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 60%)
-  else
-    selected_dir=$(find . -type d ! -path '*/.*' 2>/dev/null | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 60%)
-  fi
+  local hint="${LBUFFER}"
+  BUFFER=
+  selected_dir=$(fd --type d --color=always | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
   if [[ -n "$selected_dir" ]]; then
     cd "$selected_dir"
-    BUFFER=
     zle accept-line
   fi
   zle reset-prompt
@@ -96,12 +90,7 @@ bindkey '^[^L' fzf-git-log-widget  # ctrl+alt+l
 # Git status search using fzf
 fzf-git-status-widget() {
   local selected_file
-  local preview_cmd
-  if command -v bat > /dev/null 2>&1; then
-    preview_cmd="bat --style=numbers --color=always --line-range :500"
-  else
-    preview_cmd="cat"
-  fi
+  local preview_cmd=$FZF_PREVIEW_CMD
   if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     selected_file=$(git status --short | fzf --preview '[[ $(git ls-files --error-unmatch {2} 2>/dev/null) ]] && git diff --color=always {2} || (echo "Untracked:" && '"$preview_cmd"' {2})' --height 60% --preview-window=right:70% | awk '{print $2}')
   else

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Get the path parameter
+path="$1"
+
+# Function to get terminal size
+get_terminal_size() {
+  local size
+  size=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}
+  if [[ $size = x ]]; then
+    size=$(stty size < /dev/tty || echo "24x80")
+  fi
+
+  echo "$size"
+}
+
+# Check if the path is a directory
+if [[ -d "$path" ]]; then
+  # Use eza for directories, fallback to ls if eza is not installed
+  if command -v eza > /dev/null 2>&1; then
+    eza -l --color=always "$path"
+  else
+    ls -l --color=always "$path"
+  fi
+elif [[ -f "$path" ]]; then
+  # Check if the file is an image
+  if file --mime-type "$path" | grep -q 'image/'; then
+    # Use chafa for images, fallback to ls -l if chafa is not installed
+    if command -v chafa > /dev/null 2>&1; then
+      chafa --size $(get_terminal_size) "$path"
+    else
+      ls -l "$path"
+    fi
+  else
+    # Use bat for other files, fallback to cat if bat is not installed
+    if command -v bat > /dev/null 2>&1; then
+      bat --style=numbers --color=always "$path"
+    else
+      cat "$path"
+    fi
+  fi
+else
+  echo "Invalid path"
+fi
