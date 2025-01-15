@@ -6,7 +6,12 @@ autoload -Uz compinit && compinit
 autoload -Uz bashcompinit && bashcompinit
 
 export FZF_DEFAULT_OPTS="--ansi"
-export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-bat --style=numbers --color=always --line-range :500}"
+
+if command -v bat > /dev/null 2>&1; then
+  export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-bat --style=numbers --color=always --line-range :500}"
+else
+  export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-cat}"
+fi
 
 fzf_find_files() {
   if command -v fd > /dev/null 2>&1; then
@@ -27,7 +32,7 @@ fzf-file-widget() {
   if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
     hint="${LBUFFER##* }"
   fi
-  selected_file=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 40% --query="$hint")
+  selected_file=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
   if [[ -n "$selected_file" ]]; then
     LBUFFER="${LBUFFER%$hint}$selected_file"
   fi
@@ -41,7 +46,7 @@ bindkey '^T' fzf-file-widget
 fzf-history-widget() {
   local selected_command
   local query="${BUFFER}"
-  selected_command=$(fc -lnr 1 | fzf --height 40% --query="$query")
+  selected_command=$(fc -lnr 1 | fzf --height 60% --query="$query")
   if [[ -n "$selected_command" ]]; then
     BUFFER="$selected_command"
     CURSOR=${#BUFFER}  # Move cursor to the end of the buffer
@@ -56,9 +61,9 @@ bindkey '^[[A' fzf-history-widget
 fzf-cd-widget() {
   local selected_dir
   if command -v fd > /dev/null 2>&1; then
-    selected_dir=$(fd --type d --color=always | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 40%)
+    selected_dir=$(fd --type d --color=always | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 60%)
   else
-    selected_dir=$(find . -type d ! -path '*/.*' 2>/dev/null | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 40%)
+    selected_dir=$(find . -type d ! -path '*/.*' 2>/dev/null | fzf --preview '[[ -d {} ]] && (command -v eza > /dev/null 2>&1 && eza -l --color=always {} || ls -l --color=always {})' --height 60%)
   fi
   if [[ -n "$selected_dir" ]]; then
     cd "$selected_dir"
@@ -75,7 +80,7 @@ bindkey '^[c' fzf-cd-widget
 fzf-git-log-widget() {
   local selected_commit
   if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    selected_commit=$(git log --oneline --color 2>/dev/null | fzf --preview 'git show --color=always --stat --patch {1}' --height 40% --preview-window=right:70% | awk '{print $1}')
+    selected_commit=$(git log --oneline --color 2>/dev/null | fzf --preview 'git show --color=always --stat --patch {1}' --height 60% --preview-window=right:70% | awk '{print $1}')
   else
     selected_commit=""
   fi
@@ -91,8 +96,14 @@ bindkey '^[^L' fzf-git-log-widget  # ctrl+alt+l
 # Git status search using fzf
 fzf-git-status-widget() {
   local selected_file
+  local preview_cmd
+  if command -v bat > /dev/null 2>&1; then
+    preview_cmd="bat --style=numbers --color=always --line-range :500"
+  else
+    preview_cmd="cat"
+  fi
   if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    selected_file=$(git status --short | fzf --preview '[[ $(git ls-files --error-unmatch {2} 2>/dev/null) ]] && git diff --color=always {2} || (echo "Untracked:" && bat --style=numbers --color=always --line-range :500 {2})' --height 40% --preview-window=right:70% | awk '{print $2}')
+    selected_file=$(git status --short | fzf --preview '[[ $(git ls-files --error-unmatch {2} 2>/dev/null) ]] && git diff --color=always {2} || (echo "Untracked:" && '"$preview_cmd"' {2})' --height 60% --preview-window=right:70% | awk '{print $2}')
   else
     selected_file=""
   fi
@@ -111,7 +122,7 @@ fzf-variables-widget() {
   if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
     hint="${LBUFFER##* }"
   fi
-  selected_variable=$(env | fzf --height 40% --query="$hint" | awk -F'=' '{print $1}')
+  selected_variable=$(env | fzf --height 60% --query="$hint" | awk -F'=' '{print $1}')
   if [[ -n "$selected_variable" ]]; then
     LBUFFER="${LBUFFER%$hint}\$$selected_variable"
   fi
