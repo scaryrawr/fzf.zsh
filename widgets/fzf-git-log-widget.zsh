@@ -1,13 +1,13 @@
 # Git log search using fzf
 fzf-git-log-widget() {
-  local selected_commit
+  local selected_commits
   if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    selected_commit=$(git log --oneline --color 2>/dev/null | fzf --preview 'git show --color=always --stat --patch {1}' --height 60% --preview-window=right:70% | awk '{print $1}')
+    selected_commits=$(git log --oneline --color 2>/dev/null | fzf --preview 'git show --color=always --stat --patch {1}' --height 60% --preview-window=right:60% --multi | awk '{print $1}' | tr '\n' ' ')
   else
-    selected_commit=""
+    selected_commits=""
   fi
-  if [[ -n "$selected_commit" ]]; then
-    LBUFFER="${LBUFFER}$selected_commit"
+  if [[ -n "$selected_commits" ]]; then
+    LBUFFER="${LBUFFER}$selected_commits"
   fi
   zle redisplay
 }

@@ -12,14 +12,14 @@ fzf_find_files() {
 
 # File search using fzf
 fzf-file-widget() {
-  local selected_file
+  local selected_files
   local hint=""
   if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
     hint="${LBUFFER##* }"
   fi
-  selected_file=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
-  if [[ -n "$selected_file" ]]; then
-    LBUFFER="${LBUFFER%$hint}$selected_file"
+  selected_files=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint" --multi | tr '\n' ' ')
+  if [[ -n "$selected_files" ]]; then
+    LBUFFER="${LBUFFER%$hint}$selected_files"
   fi
   zle redisplay
 }
