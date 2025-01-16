@@ -14,6 +14,7 @@ It's still a work in progress, and has slightly different keybindings.
 | `Ctrl+Alt+L` | Git log search using fzf               |
 | `Ctrl+Alt+T` | Git status search using fzf            |
 | `Ctrl+V`     | Environment variables search using fzf |
+| `Ctrl+Alt+P` | Find a package name using fzf          |
 
 ## Dependencies
 

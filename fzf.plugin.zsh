@@ -10,113 +10,39 @@ autoload -Uz bashcompinit && bashcompinit
 export FZF_DEFAULT_OPTS="--ansi"
 export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-$SCRIPT_DIR/fzf_preview}"
 
-fzf_find_files() {
-  if command -v fd > /dev/null 2>&1; then
-    fd --type file --color=always
-  else
-    if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-      find . -type f ! -path '*/.*' -print 2>/dev/null | grep -vFf <(git ls-files --others --ignored --exclude-standard --directory)
-    else
-      find . -type f ! -path '*/.*' -print 2>/dev/null
-    fi
-  fi
+# Lazy load widget functions
+lazy_load_widget() {
+  local widget_file="$1"
+  local widget_name="$2"
+  source "$SCRIPT_DIR/widgets/$widget_file"
+  zle -N "$widget_name"
+  zle "$widget_name"
 }
 
-# File search using fzf
-fzf-file-widget() {
-  local selected_file
-  local hint=""
-  if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
-    hint="${LBUFFER##* }"
-  fi
-  selected_file=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
-  if [[ -n "$selected_file" ]]; then
-    LBUFFER="${LBUFFER%$hint}$selected_file"
-  fi
-  zle redisplay
-}
+bindkey '^T' lazy-load-fzf-file-widget
+zle -N lazy-load-fzf-file-widget
+lazy-load-fzf-file-widget() { lazy_load_widget "fzf-file-widget.zsh" "fzf-file-widget"; }
 
-zle -N fzf-file-widget
-bindkey '^T' fzf-file-widget
+bindkey '^R' lazy-load-fzf-history-widget
+zle -N lazy-load-fzf-history-widget
+lazy-load-fzf-history-widget() { lazy_load_widget "fzf-history-widget.zsh" "fzf-history-widget"; }
 
-# History search using fzf
-fzf-history-widget() {
-  local selected_command
-  local query="${BUFFER}"
-  selected_command=$(fc -lnr 1 | awk '!seen[$0]++' | fzf --height 60% --query="$query")
-  if [[ -n "$selected_command" ]]; then
-    BUFFER="$selected_command"
-    CURSOR=${#BUFFER}  # Move cursor to the end of the buffer
-  fi
-  zle redisplay
-}
-zle -N fzf-history-widget
-bindkey '^R' fzf-history-widget
-bindkey '^[[A' fzf-history-widget
+bindkey '^[c' lazy-load-fzf-cd-widget
+zle -N lazy-load-fzf-cd-widget
+lazy-load-fzf-cd-widget() { lazy_load_widget "fzf-cd-widget.zsh" "fzf-cd-widget"; }
 
-# Directory search using fzf
-fzf-cd-widget() {
-  local selected_dir
-  local hint="${LBUFFER}"
-  BUFFER=
-  selected_dir=$(fd --type d --color=always | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
-  if [[ -n "$selected_dir" ]]; then
-    cd "$selected_dir"
-    zle accept-line
-  fi
-  zle reset-prompt
-}
+bindkey '^[^L' lazy-load-fzf-git-log-widget
+zle -N lazy-load-fzf-git-log-widget
+lazy-load-fzf-git-log-widget() { lazy_load_widget "fzf-git-log-widget.zsh" "fzf-git-log-widget"; }
 
-zle -N fzf-cd-widget
-bindkey '^[c' fzf-cd-widget
+bindkey '^[^T' lazy-load-fzf-git-status-widget
+zle -N lazy-load-fzf-git-status-widget
+lazy-load-fzf-git-status-widget() { lazy_load_widget "fzf-git-status-widget.zsh" "fzf-git-status-widget"; }
 
-# Git log search using fzf
-fzf-git-log-widget() {
-  local selected_commit
-  if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    selected_commit=$(git log --oneline --color 2>/dev/null | fzf --preview 'git show --color=always --stat --patch {1}' --height 60% --preview-window=right:70% | awk '{print $1}')
-  else
-    selected_commit=""
-  fi
-  if [[ -n "$selected_commit" ]]; then
-    LBUFFER="${LBUFFER}$selected_commit"
-  fi
-  zle redisplay
-}
+bindkey '^V' lazy-load-fzf-variables-widget
+zle -N lazy-load-fzf-variables-widget
+lazy-load-fzf-variables-widget() { lazy_load_widget "fzf-variables-widget.zsh" "fzf-variables-widget"; }
 
-zle -N fzf-git-log-widget
-bindkey '^[^L' fzf-git-log-widget  # ctrl+alt+l
-
-# Git status search using fzf
-fzf-git-status-widget() {
-  local selected_file
-  local preview_cmd=$FZF_PREVIEW_CMD
-  if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    selected_file=$(git status --short | fzf --preview '[[ $(git ls-files --error-unmatch {2} 2>/dev/null) ]] && git diff --color=always {2} || (echo "Untracked:" && '"$preview_cmd"' {2})' --height 60% --preview-window=right:70% | awk '{print $2}')
-  else
-    selected_file=""
-  fi
-  if [[ -n "$selected_file" ]]; then
-    LBUFFER="${LBUFFER}$selected_file"
-  fi
-  zle redisplay
-}
-
-zle -N fzf-git-status-widget
-bindkey '^[^T' fzf-git-status-widget  # ctrl+alt+t
-
-fzf-variables-widget() {
-  local selected_variable
-  local hint=""
-  if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
-    hint="${LBUFFER##* }"
-  fi
-  selected_variable=$(env | fzf --height 60% --query="$hint" | awk -F'=' '{print $1}')
-  if [[ -n "$selected_variable" ]]; then
-    LBUFFER="${LBUFFER%$hint}\$$selected_variable"
-  fi
-  zle redisplay
-}
-
-zle -N fzf-variables-widget
-bindkey '^V' fzf-variables-widget  # ctrl+v
+bindkey '^[^P' lazy-load-fzf-package-widget
+zle -N lazy-load-fzf-package-widget
+lazy-load-fzf-package-widget() { lazy_load_widget "fzf-package.zsh" "fzf-package-widget"; }
