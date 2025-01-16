@@ -9,6 +9,7 @@ autoload -Uz bashcompinit && bashcompinit
 
 export FZF_DEFAULT_OPTS="--ansi"
 export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-$SCRIPT_DIR/fzf_preview}"
+export FZF_GIT_PREVIEW_CMD="${FZF_GIT_PREVIEW_CMD:-$SCRIPT_DIR/fzf_git_preview}"
 
 # Lazy load widget functions
 lazy_load_widget() {
