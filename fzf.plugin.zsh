@@ -24,6 +24,7 @@ zle -N lazy-load-fzf-file-widget
 lazy-load-fzf-file-widget() { lazy_load_widget "fzf-file-widget.zsh" "fzf-file-widget"; }
 
 bindkey '^R' lazy-load-fzf-history-widget
+bindkey '^[[A' lazy-load-fzf-history-widget
 zle -N lazy-load-fzf-history-widget
 lazy-load-fzf-history-widget() { lazy_load_widget "fzf-history-widget.zsh" "fzf-history-widget"; }
 
