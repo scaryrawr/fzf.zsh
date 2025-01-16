@@ -9,7 +9,9 @@ autoload -Uz bashcompinit && bashcompinit
 
 export FZF_DEFAULT_OPTS="--ansi"
 export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-$SCRIPT_DIR/fzf_preview}"
-export FZF_GIT_PREVIEW_CMD="${FZF_GIT_PREVIEW_CMD:-$SCRIPT_DIR/fzf_git_preview}"
+export FZF_GIT_STATUS_PREVIEW_CMD="${FZF_GIT_STATUS_PREVIEW_CMD:-$SCRIPT_DIR/fzf_git_status_preview}"
+export FZF_GIT_BLAME_PREVIEW_CMD="${FZF_GIT_BLAME_PREVIEW_CMD:-$SCRIPT_DIR/fzf_git_blame_preview}"
+export FZF_GIT_COMMIT_PREVIEW_CMD="${FZF_GIT_COMMIT_PREVIEW_CMD:-$SCRIPT_DIR/fzf_git_commit_preview}"
 
 # Lazy load widget functions
 lazy_load_widget() {
@@ -48,3 +50,7 @@ lazy-load-fzf-variables-widget() { lazy_load_widget "fzf-variables-widget.zsh" "
 bindkey '^[^P' lazy-load-fzf-package-widget
 zle -N lazy-load-fzf-package-widget
 lazy-load-fzf-package-widget() { lazy_load_widget "fzf-package-widget.zsh" "fzf-package-widget"; }
+
+bindkey '^[^B' lazy-load-fzf-git-blame-widget
+zle -N lazy-load-fzf-git-blame-widget
+lazy-load-fzf-git-blame-widget() { lazy_load_widget "fzf-git-blame-widget.zsh" "fzf-git-blame-widget"; }

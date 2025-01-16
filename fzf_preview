@@ -27,7 +27,7 @@ elif [[ -f "$path" ]]; then
   if file --mime-type "$path" | grep -q 'image/'; then
     # Use chafa for images, fallback to ls -l if chafa is not installed
     if command -v chafa > /dev/null 2>&1; then
-      chafa --size $(get_terminal_size) "$path"
+      chafa --size "$(get_terminal_size)" "$path"
     else
       ls -l "$path"
     fi

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+commit_hash=${1//^/}
+# Check if delta is available
+if command -v delta &> /dev/null; then
+    git show "$commit_hash" | delta
+else
+    git show "$commit_hash"
+fi

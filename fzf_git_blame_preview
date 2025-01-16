@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+file=$1
+extension="${file##*.}"
+
+# Check if the file is binary or an image
+if file --mime-type "$file" | grep -qE 'application/octet-stream|image/'; then
+  "$FZF_PREVIEW_CMD" "$file"
+else
+  git blame "$file" | delta --default-language "$extension"
+fi

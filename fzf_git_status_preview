@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 status_line="$1"
 staged_status="${status_line:0:1}"
 unstaged_status="${status_line:1:1}"
@@ -5,26 +7,26 @@ file="${status_line:3}"
 if command -v delta &> /dev/null; then
   if [[ "$staged_status" == "M" ]]; then
     echo 'Staged changes:'
-    git diff --color=always --cached $file | delta
+    git diff --color=always --cached "$file" | delta
   fi
   if [[ "$unstaged_status" == "M" ]]; then
     echo 'Unstaged changes:'
-    git diff --color=always $file | delta
+    git diff --color=always "$file" | delta
   fi
   if [[ "$staged_status" == "?" && "$unstaged_status" == "?" ]]; then
-    "$FZF_PREVIEW_CMD" $file
+    "$FZF_PREVIEW_CMD" "$file"
   fi
 else
   if [[ "$staged_status" == "M" ]]; then
     echo 'Staged changes:'
-    git diff --color=always --cached $file
+    git diff --color=always --cached "$file"
   fi
   if [[ "$unstaged_status" == "M" ]]; then
     echo 'Unstaged changes:'
-    git diff --color=always $file
+    git diff --color=always "$file"
   fi
   if [[ "$staged_status" == "?" && "$unstaged_status" == "?" ]]; then
     echo 'Untracked:'
-    "$FZF_PREVIEW_CMD" $file
+    "$FZF_PREVIEW_CMD" "$file"
   fi
 fi
