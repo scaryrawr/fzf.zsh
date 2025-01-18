@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+target_name=$1
+
+process_packages() {
+  while read -r package; do
+    if jq -r '.name' "$package" | grep -q "^$target_name$"; then
+      $FZF_PREVIEW_CMD "$package"
+    fi
+  done
+}
+
+if command -v fd > /dev/null 2>&1; then
+  fd -t f 'package\.json' | process_packages
+else
+  find . -name 'package.json' -not -path '*/node_modules/*' | process_packages
+fi
