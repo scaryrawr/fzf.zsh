@@ -2,13 +2,23 @@
 file=$1
 extension="${file##*.}"
 
-# Check if the file is binary or an image
-if file --mime-type "$file" | grep -qE 'application/octet-stream|image/'; then
-  "$FZF_PREVIEW_CMD" "$file"
-else
+run_git_blame() {
   if command -v delta &> /dev/null; then
     git blame "$file" | delta --default-language "$extension"
   else
     git blame --abbrev=8 "$file"
   fi
+}
+
+# Check if the file command is available
+if command -v file > /dev/null 2>&1; then
+  # Check if the file is binary or an image
+  if file --mime-type "$file" | grep -qE 'application/octet-stream|image/'; then
+    "$FZF_PREVIEW_CMD" "$file"
+  else
+    run_git_blame
+  fi
+else
+  # Default to the current else command if file command is not available
+  run_git_blame
 fi
