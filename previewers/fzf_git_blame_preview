@@ -6,5 +6,9 @@ extension="${file##*.}"
 if file --mime-type "$file" | grep -qE 'application/octet-stream|image/'; then
   "$FZF_PREVIEW_CMD" "$file"
 else
-  git blame "$file" | delta --default-language "$extension"
+  if command -v delta &> /dev/null; then
+    git blame "$file" | delta --default-language "$extension"
+  else
+    git blame --abbrev=8 "$file"
+  fi
 fi
