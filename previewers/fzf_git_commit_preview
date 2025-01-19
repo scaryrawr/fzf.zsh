@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 commit_hash=${1//^/}
-# Check if delta is available
-if command -v delta &> /dev/null; then
-    git show "$commit_hash" | delta
+# Check if FZF_DIFF_PREVIEW_CMD is set
+if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
+    git show "$commit_hash" | $FZF_DIFF_PREVIEW_CMD
 else
     git show "$commit_hash"
 fi

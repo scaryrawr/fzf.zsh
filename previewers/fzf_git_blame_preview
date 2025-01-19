@@ -3,8 +3,8 @@ file=$1
 extension="${file##*.}"
 
 run_git_blame() {
-  if command -v delta &> /dev/null; then
-    git blame "$file" | delta --default-language "$extension"
+  if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
+    git blame "$file" | $FZF_DIFF_PREVIEW_CMD --default-language "$extension"
   else
     git blame --abbrev=8 "$file"
   fi

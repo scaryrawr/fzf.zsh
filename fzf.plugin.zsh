@@ -15,6 +15,10 @@ export FZF_GIT_COMMIT_PREVIEW_CMD="${FZF_GIT_COMMIT_PREVIEW_CMD:-$SCRIPT_DIR/pre
 export FZF_GIT_LOG_PREVIEW_CMD="${FZF_GIT_LOG_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_log_preview}"
 export FZF_GIT_STATUS_PREVIEW_CMD="${FZF_GIT_STATUS_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_status_preview}"
 export FZF_PACKAGE_PREVIEW_CMD="${FZF_PACKAGE_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_package_preview}"
+export FZF_DIFF_PREVIEW_CMD="${FZF_DIFF_PREVIEW_CMD}"
+if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && command -v delta &> /dev/null; then
+  export FZF_DIFF_PREVIEW_CMD="delta --paging=never"
+fi
 
 # Lazy load widget functions
 lazy_load_widget() {

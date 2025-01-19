@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 commit=$1
-if command -v delta &> /dev/null; then
-  git show --color=always --stat --patch "$commit" | delta
+if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
+  git show --color=always --stat --patch "$commit" | $FZF_DIFF_PREVIEW_CMD
 else
   git show --color=always --stat --patch "$commit"
 fi
