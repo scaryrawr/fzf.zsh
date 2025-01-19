@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+commit=$1
+if command -v delta &> /dev/null; then
+  git show --color=always --stat --patch "$commit" | delta
+else
+  git show --color=always --stat --patch "$commit"
+fi

@@ -8,10 +8,12 @@ autoload -Uz compinit && compinit
 autoload -Uz bashcompinit && bashcompinit
 
 export FZF_DEFAULT_OPTS="--ansi"
+
 export FZF_PREVIEW_CMD="${FZF_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_preview}"
-export FZF_GIT_STATUS_PREVIEW_CMD="${FZF_GIT_STATUS_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_status_preview}"
 export FZF_GIT_BLAME_PREVIEW_CMD="${FZF_GIT_BLAME_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_blame_preview}"
 export FZF_GIT_COMMIT_PREVIEW_CMD="${FZF_GIT_COMMIT_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_commit_preview}"
+export FZF_GIT_LOG_PREVIEW_CMD="${FZF_GIT_LOG_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_log_preview}"
+export FZF_GIT_STATUS_PREVIEW_CMD="${FZF_GIT_STATUS_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_status_preview}"
 export FZF_PACKAGE_PREVIEW_CMD="${FZF_PACKAGE_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_package_preview}"
 
 # Lazy load widget functions
