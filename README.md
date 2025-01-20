@@ -75,3 +75,16 @@ git clone https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf
 - [bat](https://github.com/sharkdp/bat) - cat with syntax highlighting
 - [fd](https://github.com/sharkdp/fd) - Alternative to `find`
 - [eza](https://github.com/eza-community/eza) - Alternative to `ls`
+
+## Customizable Variables
+
+You can customize the behavior of the fzf plugin by setting the following environment variables:
+
+| Variable Name                | Description                           | Passed Argument |
+| ---------------------------- | ------------------------------------- | --------------- |
+| `FZF_DEFAULT_OPTS`           | Default options for fzf               | N/A             |
+| `FZF_PREVIEW_CMD`            | Command to use for file preview       | file path       |
+| `FZF_GIT_BLAME_PREVIEW_CMD`  | Command to use for git blame preview  | file path       |
+| `FZF_GIT_COMMIT_PREVIEW_CMD` | Command to use for git commit preview | commit          |
+| `FZF_GIT_LOG_PREVIEW_CMD`    | Command to use for git log preview    | commit          |
+| `FZF_DIFF_PREVIEW_CMD`       | Command to use for diff preview       | diff            |
