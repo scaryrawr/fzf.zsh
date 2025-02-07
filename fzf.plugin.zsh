@@ -30,6 +30,7 @@ lazy_load_widget() {
 }
 
 bindkey '^T' lazy-load-fzf-file-widget
+bindkey '^[^F' lazy-load-fzf-file-widget
 zle -N lazy-load-fzf-file-widget
 lazy-load-fzf-file-widget() { lazy_load_widget "fzf-file-widget.zsh" "fzf-file-widget"; }
 
@@ -47,6 +48,7 @@ zle -N lazy-load-fzf-git-log-widget
 lazy-load-fzf-git-log-widget() { lazy_load_widget "fzf-git-log-widget.zsh" "fzf-git-log-widget"; }
 
 bindkey '^[^T' lazy-load-fzf-git-status-widget
+bindkey '^[^S' lazy-load-fzf-git-status-widget
 zle -N lazy-load-fzf-git-status-widget
 lazy-load-fzf-git-status-widget() { lazy_load_widget "fzf-git-status-widget.zsh" "fzf-git-status-widget"; }
 

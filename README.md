@@ -6,16 +6,16 @@ It's still a work in progress, and has slightly different keybindings.
 
 ## Keybindings
 
-| Keybinding   | Description                            |
-| ------------ | -------------------------------------- |
-| `Ctrl+T`     | File search using fzf                  |
-| `Ctrl+R`     | History search using fzf               |
-| `Alt+c`      | Change directory using fzf             |
-| `Ctrl+Alt+L` | Git log search using fzf               |
-| `Ctrl+Alt+T` | Git status search using fzf            |
-| `Ctrl+V`     | Environment variables search using fzf |
-| `Ctrl+Alt+P` | Find a package name using fzf          |
-| `Ctrl+Alt+B` | Blame search                           |
+| Keybinding                   | Description                            |
+| ---------------------------- | -------------------------------------- |
+| `Ctrl+T` or `Ctrl+Alt+F`     | File search using fzf                  |
+| `Ctrl+R`                     | History search using fzf               |
+| `Alt+c`                      | Change directory using fzf             |
+| `Ctrl+Alt+L`                 | Git log search using fzf               |
+| `Ctrl+Alt+T` or `Ctrl+Alt+S` | Git status search using fzf            |
+| `Ctrl+V`                     | Environment variables search using fzf |
+| `Ctrl+Alt+P`                 | Find a package name using fzf          |
+| `Ctrl+Alt+B`                 | Blame search                           |
 
 ## Installation
 
