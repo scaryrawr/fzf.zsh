@@ -9,7 +9,7 @@ fzf-package-widget() {
     return 1
   fi
   
-  selected_packages=$(yarn --json workspaces info | jq -r '.data' | jq -r 'keys | .[]' | fzf --height 60% --prompt="Select package(s): " --preview "$FZF_PACKAGE_PREVIEW_CMD {}" --query="$hint" --multi | tr '\n' ' ')
+  selected_packages=$(yarn --json workspaces info | jq -r '.data' | jq -r 'keys[]' | fzf --height 60% --prompt="Select package(s): " --preview "$FZF_PACKAGE_PREVIEW_CMD {}" --query="$hint" --multi | tr '\n' ' ')
 
   if [[ -n "$selected_packages" ]]; then
     LBUFFER="${LBUFFER%$hint}$selected_packages"
