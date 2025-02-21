@@ -1,17 +1,7 @@
 #!/usr/bin/env bash
 
 target_name=$1
+cache_file=$2
 
-process_packages() {
-  while read -r package; do
-    if jq -e --arg target_name "$target_name" '.name == $target_name' "$package" > /dev/null 2>&1; then
-      $FZF_PREVIEW_CMD "$package"
-    fi
-  done
-}
-
-if command -v fd > /dev/null 2>&1; then
-  fd -t f 'package\.json' 2>/dev/null | process_packages
-else
-  find . -name 'package.json' -not -path '*/node_modules/*' 2>/dev/null | process_packages
-fi
+location=$(jq -r ".[] | select(.name == \"$target_name\") | .path" "$cache_file")
+$FZF_PREVIEW_CMD "$location"
