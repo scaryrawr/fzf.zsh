@@ -4,14 +4,14 @@ target_name=$1
 
 process_packages() {
   while read -r package; do
-    if jq -r '.name' "$package" | grep -q "^$target_name$"; then
+    if jq -e --arg target_name "$target_name" '.name == $target_name' "$package" > /dev/null 2>&1; then
       $FZF_PREVIEW_CMD "$package"
     fi
   done
 }
 
 if command -v fd > /dev/null 2>&1; then
-  fd -t f 'package\.json' | process_packages
+  fd -t f 'package\.json' 2>/dev/null | process_packages
 else
-  find . -name 'package.json' -not -path '*/node_modules/*' | process_packages
+  find . -name 'package.json' -not -path '*/node_modules/*' 2>/dev/null | process_packages
 fi
