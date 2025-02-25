@@ -11,14 +11,9 @@ fzf-package-widget() {
   
   safe_dir=${PWD//\//_}
   cache_dir="/tmp/fzf.zsh/$safe_dir"
-  
-  if [[ "$(uname)" == "Linux" ]]; then
-    mod_time=$(stat --format=%Y .)
-  else
-    mod_time=$(stat -f %m .)
-  fi
+  hash=$(git ls-files '*package.json' | xargs sha256sum | sha256sum | awk '{print $1}')
 
-  cache_file="$cache_dir/$mod_time.json"
+  cache_file="$cache_dir/$hash.json"
   if [[ -f "$cache_file" ]]; then
     packages_info=$(<"$cache_file")
   else
