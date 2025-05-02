@@ -30,11 +30,11 @@ fzf-package-widget() {
     mkdir -p "$cache_dir"
     echo '[]' > "$cache_file"
     if [[ -f 'package.json' ]]; then
-      yarn --json workspaces info | jq -r '.data' | jq -r 'to_entries | map({name: .key, path: ("./" + .value.location + "/package.json")})' > "$cache_file"
+      yarn --json workspaces info 2>/dev/null | jq -r '.data' | jq -r 'to_entries | map({name: .key, path: ("./" + .value.location + "/package.json")})' > "$cache_file"
     fi
     
     if [[ -f 'Cargo.toml' ]]; then
-      cargo metadata --format-version 1 | jq -r '.packages | map(select(.id | startswith("path+file")) | {name: .name, path: .manifest_path})' | jq -s '.[0] + .[1]' "$cache_file" - > "$cache_file.tmp"
+      cargo metadata --format-version 1 2>/dev/null | jq -r '.packages | map(select(.id | startswith("path+file")) | {name: .name, path: .manifest_path})' | jq -s '.[0] + .[1]' "$cache_file" - > "$cache_file.tmp"
       mv "$cache_file.tmp" "$cache_file"
     fi
     
