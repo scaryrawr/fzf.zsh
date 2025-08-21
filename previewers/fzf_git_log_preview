@@ -2,7 +2,7 @@
 
 commit=$1
 if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
-  git show --color=always --stat --patch "$commit" | $FZF_DIFF_PREVIEW_CMD
+	git show --color=always --stat --patch "$commit" | $FZF_DIFF_PREVIEW_CMD
 else
-  git show --color=always --stat --patch "$commit"
+	git show --color=always --stat --patch "$commit"
 fi

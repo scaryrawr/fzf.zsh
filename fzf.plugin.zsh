@@ -1,5 +1,6 @@
-0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
-0="${${(M)0:#/*}:-$PWD/$0}"
+# These two lines recompute $0 to the absolute path of this file when sourced.
+# Wrap in eval so shfmt doesn't attempt to parse zsh-only expansions.
+eval '0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"; 0="${${(M)0:#/*}:-$PWD/$0}"'
 
 SCRIPT_DIR="$(dirname "$0")"
 
@@ -16,17 +17,17 @@ export FZF_GIT_LOG_PREVIEW_CMD="${FZF_GIT_LOG_PREVIEW_CMD:-$SCRIPT_DIR/previewer
 export FZF_GIT_STATUS_PREVIEW_CMD="${FZF_GIT_STATUS_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_git_status_preview}"
 export FZF_PACKAGE_PREVIEW_CMD="${FZF_PACKAGE_PREVIEW_CMD:-$SCRIPT_DIR/previewers/fzf_package_preview}"
 export FZF_DIFF_PREVIEW_CMD="${FZF_DIFF_PREVIEW_CMD}"
-if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && command -v delta &> /dev/null; then
-  export FZF_DIFF_PREVIEW_CMD="delta --paging=never"
+if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && command -v delta &>/dev/null; then
+	export FZF_DIFF_PREVIEW_CMD="delta --paging=never"
 fi
 
 # Lazy load widget functions
 lazy_load_widget() {
-  local widget_file="$1"
-  local widget_name="$2"
-  source "$SCRIPT_DIR/widgets/$widget_file"
-  zle -N "$widget_name"
-  zle "$widget_name"
+	local widget_file="$1"
+	local widget_name="$2"
+	source "$SCRIPT_DIR/widgets/$widget_file"
+	zle -N "$widget_name"
+	zle "$widget_name"
 }
 
 bindkey '^T' lazy-load-fzf-file-widget
