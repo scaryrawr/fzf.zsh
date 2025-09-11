@@ -57,6 +57,7 @@ zle -N lazy-load-fzf-variables-widget
 lazy-load-fzf-variables-widget() { lazy_load_widget "fzf-variables-widget.zsh" "fzf-variables-widget"; }
 
 bindkey '^[^P' lazy-load-fzf-package-widget
+bindkey '^[^W' lazy-load-fzf-package-widget
 zle -N lazy-load-fzf-package-widget
 lazy-load-fzf-package-widget() { lazy_load_widget "fzf-package-widget.zsh" "fzf-package-widget"; }
 
