@@ -2,7 +2,6 @@
 fzf-cd-widget() {
 	local selected_dir
 	local hint="${LBUFFER}"
-	BUFFER=
 	if command -v fd >/dev/null 2>&1; then
 		selected_dir=$(fd --type d --color=always | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
 	else
@@ -10,7 +9,6 @@ fzf-cd-widget() {
 	fi
 	if [[ -n "$selected_dir" ]]; then
 		cd "$selected_dir"
-		zle accept-line
 	fi
-	zle reset-prompt
+	zle redisplay
 }
