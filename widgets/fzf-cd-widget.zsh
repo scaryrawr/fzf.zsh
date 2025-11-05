@@ -9,6 +9,7 @@ fzf-cd-widget() {
 	fi
 	if [[ -n "$selected_dir" ]]; then
 		cd "$selected_dir"
+		zle accept-line
 	fi
 	zle reset-prompt
 }
