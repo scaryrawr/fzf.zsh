@@ -64,6 +64,3 @@ lazy-load-fzf-package-widget() { lazy_load_widget "fzf-package-widget.zsh" "fzf-
 bindkey '^[^B' lazy-load-fzf-git-blame-widget
 zle -N lazy-load-fzf-git-blame-widget
 lazy-load-fzf-git-blame-widget() { lazy_load_widget "fzf-git-blame-widget.zsh" "fzf-git-blame-widget"; }
-
-bindkey '^[[A' up-history
-bindkey '^[[B' down-history
