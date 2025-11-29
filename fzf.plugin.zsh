@@ -39,14 +39,11 @@ zle -N fzf-package-widget
 zle -N fzf-git-blame-widget
 
 # Key bindings
-bindkey '^T' fzf-file-widget
 bindkey '^[^F' fzf-file-widget
 bindkey '^R' fzf-history-widget
 bindkey '^[c' fzf-cd-widget
 bindkey '^[^L' fzf-git-log-widget
-bindkey '^[^T' fzf-git-status-widget
 bindkey '^[^S' fzf-git-status-widget
 bindkey '^V' fzf-variables-widget
-bindkey '^[^P' fzf-package-widget
 bindkey '^[^W' fzf-package-widget
 bindkey '^[^B' fzf-git-blame-widget
