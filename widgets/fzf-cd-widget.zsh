@@ -2,7 +2,7 @@
 fzf-cd-widget() {
 	local selected_dir
 	local hint="${LBUFFER}"
-	if command -v fd >/dev/null 2>&1; then
+	if (( $+commands[fd] )); then
 		selected_dir=$(fd --type d --color=always | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
 	else
 		selected_dir=$(find . -type d -not -path '*/\.*' -not -path '.' | sed 's|^\./||' | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --query="$hint")
