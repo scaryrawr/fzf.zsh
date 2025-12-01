@@ -2,12 +2,12 @@
 # Wrap in eval so shfmt doesn't attempt to parse zsh-only expansions.
 eval '0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"; 0="${${(M)0:#/*}:-$PWD/$0}"'
 
-FZF_PLUGIN_DIR="$(dirname "$0")"
+FZF_PLUGIN_DIR="${0:h}"
 
 # ------------------------------------------------------------------------------
 # Dependency check
 # ------------------------------------------------------------------------------
-if ! command -v fzf &>/dev/null; then
+if ! (( $+commands[fzf] )); then
 	echo "fzf plugin: fzf not found. Please install fzf to use this plugin." >&2
 	return 1
 fi
@@ -29,7 +29,7 @@ for previewer in "$FZF_PLUGIN_DIR"/previewers/fzf_*; do
 done
 
 # Special case: delta for diffs
-if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && command -v delta &>/dev/null; then
+if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && (( $+commands[delta] )); then
 	export FZF_DIFF_PREVIEW_CMD="delta --paging=never"
 fi
 

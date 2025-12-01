@@ -85,7 +85,7 @@ fzf_package_widget_handle_bun() {
 fzf_package_widget_handle_pnpm() {
 	local cache_file="$1"
 	# Use pnpm workspace info if present
-	if [[ -f './pnpm-workspace.yaml' ]] && command -v pnpm >/dev/null 2>&1; then
+	if [[ -f './pnpm-workspace.yaml' ]] && (( $+commands[pnpm] )); then
 		local tmp_file="${cache_file}.tmp"
 		# List all workspace packages (excluding the root), then map to {name, path}
 		local raw_output=$(pnpm list --recursive --depth -1 --json 2>/dev/null)

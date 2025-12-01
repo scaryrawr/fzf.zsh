@@ -1,5 +1,5 @@
 fzf_find_files() {
-	if command -v fd >/dev/null 2>&1; then
+	if (( $+commands[fd] )); then
 		fd --type file --color=always
 	else
 		if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
