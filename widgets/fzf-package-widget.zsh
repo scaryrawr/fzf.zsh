@@ -30,9 +30,8 @@ fzf-package-widget() {
 		mkdir -p "$cache_dir"
 		echo '[]' >"$cache_file"
 
-		fzf_package_widget_handle_yarn "$cache_file"
+		fzf_package_widget_handle_npm_workspaces "$cache_file"
 		fzf_package_widget_handle_pnpm "$cache_file"
-		fzf_package_widget_handle_bun "$cache_file"
 		fzf_package_widget_handle_cargo "$cache_file"
 
 		packages_info=$(<"$cache_file")
@@ -46,50 +45,64 @@ fzf-package-widget() {
 	zle redisplay
 }
 
-fzf_package_widget_handle_bun() {
+# Shared helper: discover packages from workspace patterns using fd/find
+_fzf_package_widget_find_packages() {
 	local cache_file="$1"
-	[[ -f 'package.json' ]] || return 0
-	[[ -f 'bun.lock' ]] || return 0
+	local workspaces="$2"
 
-	local workspaces
-	workspaces=$(jq -r '.workspaces.packages[]?' package.json 2>/dev/null)
-	if [[ -z "$workspaces" ]]; then
-		workspaces=$(jq -r '.workspaces[]?' package.json 2>/dev/null)
-	fi
 	[[ -n "$workspaces" ]] || return 0
 
-	# Discover actual workspace package.json files from patterns and build JSON objects
-	local packages_data=""
+	# Build list of directories to search from patterns
+	local search_dirs=()
 	while IFS= read -r pattern; do
 		[[ -z "$pattern" ]] && continue
-		while IFS= read -r pkg; do
-			local name=$(jq -r .name "$pkg" 2>/dev/null)
-			if [[ -n "$name" && "$name" != "null" ]]; then
-				local obj=$(jq -n --arg name "$name" --arg path "$pkg" -c '{name: $name, path: $path}' 2>/dev/null)
-				if [[ -z "$packages_data" ]]; then
-					packages_data="$obj"
-				else
-					packages_data+=$'\n'"$obj"
-				fi
-			fi
-		done < <(find . -path "./$pattern/package.json" -not -path "*/node_modules/*" -not -path "*/dist/*" -print 2>/dev/null)
+		[[ "$pattern" == !* ]] && continue  # Skip negation patterns
+		# Extract directory from pattern (e.g., "packages/*" -> "packages")
+		local dir="${pattern%%/*}"
+		[[ -d "$dir" ]] && search_dirs+=("$dir")
 	done <<<"$workspaces"
 
-	[[ -n "$packages_data" ]] || return 0
+	[[ ${#search_dirs[@]} -eq 0 ]] && return 0
 
-	# Merge Bun workspaces into existing cache
+	# Use fd if available (faster), otherwise fall back to find
+	local package_files
+	if (( $+commands[fd] )); then
+		package_files=$(fd -t f -H package.json "${search_dirs[@]}" 2>/dev/null)
+	else
+		package_files=$(find "${search_dirs[@]}" -name package.json -not -path "*/node_modules/*" -not -path "*/dist/*" 2>/dev/null)
+	fi
+
+	[[ -n "$package_files" ]] || return 0
+
+	# Process files with jq in batch
 	local tmp_file="${cache_file}.tmp"
-	printf '%s\n' "$packages_data" 2>/dev/null | jq -s '.' 2>/dev/null | jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
+	echo "$package_files" | xargs jq -c '{name: .name, path: input_filename}' 2>/dev/null | 
+		jq -s '.' 2>/dev/null | 
+		jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
 }
 
 fzf_package_widget_handle_pnpm() {
 	local cache_file="$1"
-	# Use pnpm workspace info if present
 	[[ -f './pnpm-workspace.yaml' ]] || return 0
+
+	# Try fd/find first (faster and doesn't require pnpm)
+	local workspaces
+	if (( $+commands[yq] )); then
+		workspaces=$(yq -r '.packages[]?' './pnpm-workspace.yaml' 2>/dev/null)
+	else
+		# Fallback: simple grep for lines starting with "  - " under packages
+		workspaces=$(grep -E "^\s+-\s+['\"]?[^'\"]+['\"]?\s*$" './pnpm-workspace.yaml' 2>/dev/null | sed "s/^[[:space:]]*-[[:space:]]*['\"]\\{0,1\\}\\([^'\"]*\\)['\"]\\{0,1\\}[[:space:]]*$/\\1/")
+	fi
+
+	if [[ -n "$workspaces" ]]; then
+		_fzf_package_widget_find_packages "$cache_file" "$workspaces"
+		return $?
+	fi
+
+	# Fall back to pnpm command if available
 	(( $+commands[pnpm] )) || return 0
 
 	local tmp_file="${cache_file}.tmp"
-	# List all workspace packages (excluding the root), then map to {name, path}
 	local raw_output=$(pnpm list --recursive --depth -1 --json 2>/dev/null)
 	[[ -n "$raw_output" && "$raw_output" != "[]" ]] || return 0
 
@@ -110,26 +123,39 @@ fzf_package_widget_handle_pnpm() {
 		jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
 }
 
-fzf_package_widget_handle_yarn() {
+fzf_package_widget_handle_npm_workspaces() {
 	local cache_file="$1"
 	[[ -f 'package.json' ]] || return 0
-	[[ -f 'yarn.lock' ]] || return 0
-	(( $+commands[yarn] )) || return 0
+	[[ -f 'pnpm-workspace.yaml' ]] && return 0  # Skip if pnpm workspace (handled by pnpm handler)
 
-	local yarn_version=$(yarn --version 2>/dev/null | cut -d. -f1)
-	local tmp_file="${cache_file}.tmp"
-	if [[ "$yarn_version" == "1" ]]; then
-		# Merge Yarn v1 workspaces into existing cache
-		yarn --json workspaces info 2>/dev/null |
-			jq -r '.data' 2>/dev/null |
-			jq -c 'to_entries | map({name: .key, path: (.value.location + "/package.json")})' 2>/dev/null |
-			jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
-	else
-		# Merge Yarn Berry (v2+) workspaces into existing cache
-		yarn workspaces list --json 2>/dev/null |
-			jq -s '[.[] | select(.location != ".") | {name: .name, path: (.location + "/package.json")}]' 2>/dev/null |
-			jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
+	# Try yarn command first if available (fastest for workspaces, works for yarn/bun/npm)
+	if (( $+commands[yarn] )); then
+		local yarn_version=$(yarn --version 2>/dev/null | cut -d. -f1)
+		local tmp_file="${cache_file}.tmp"
+		if [[ "$yarn_version" == "1" ]]; then
+			# Merge Yarn v1 workspaces into existing cache
+			yarn --json workspaces info 2>/dev/null |
+				jq -r '.data' 2>/dev/null |
+				jq -c 'to_entries | map({name: .key, path: (.value.location + "/package.json")})' 2>/dev/null |
+				jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
+			return $?
+		else
+			# Merge Yarn Berry (v2+) workspaces into existing cache
+			yarn workspaces list --json 2>/dev/null |
+				jq -s '[.[] | select(.location != ".") | {name: .name, path: (.location + "/package.json")}]' 2>/dev/null |
+				jq -s '.[0] + .[1]' "$cache_file" - >"$tmp_file" 2>/dev/null && mv "$tmp_file" "$cache_file"
+			return $?
+		fi
 	fi
+
+	# Fall back to parsing package.json and using fd/find
+	local workspaces
+	workspaces=$(jq -r '.workspaces.packages[]?' package.json 2>/dev/null)
+	if [[ -z "$workspaces" ]]; then
+		workspaces=$(jq -r '.workspaces[]?' package.json 2>/dev/null)
+	fi
+
+	_fzf_package_widget_find_packages "$cache_file" "$workspaces"
 }
 
 fzf_package_widget_handle_cargo() {
