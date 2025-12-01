@@ -1,0 +1,80 @@
+name: Test Package Widget
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'widgets/fzf-package-widget.zsh'
+      - 'tests/**'
+      - '.github/workflows/test-package-widget.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'widgets/fzf-package-widget.zsh'
+      - 'tests/**'
+      - '.github/workflows/test-package-widget.yml'
+  workflow_dispatch:
+
+jobs:
+  test-npm-workspace:
+    name: Test npm workspace discovery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zsh
+      
+      - name: Test npm workspace discovery
+        run: |
+          cd tests/fixtures/npm-workspace
+          zsh ../../../tests/test-package-discovery.zsh npm
+
+  test-pnpm-workspace:
+    name: Test pnpm workspace discovery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zsh
+      
+      - name: Test pnpm workspace discovery
+        run: |
+          cd tests/fixtures/pnpm-workspace
+          zsh ../../../tests/test-package-discovery.zsh pnpm
+
+  test-cargo-workspace:
+    name: Test cargo workspace discovery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zsh
+      
+      - name: Test cargo workspace discovery
+        run: |
+          cd tests/fixtures/cargo-workspace
+          zsh ../../../tests/test-package-discovery.zsh cargo
