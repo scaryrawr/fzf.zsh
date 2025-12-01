@@ -96,6 +96,8 @@ You can customize the behavior of the fzf plugin by setting the following enviro
 | `FZF_GIT_COMMIT_PREVIEW_CMD` | Command to use for git commit preview | commit          |
 | `FZF_GIT_LOG_PREVIEW_CMD`    | Command to use for git log preview    | commit          |
 | `FZF_DIFF_PREVIEW_CMD`       | Command to use for diff preview       | diff            |
+| `FZF_GIT_STATUS_PREVIEW_CMD` | Command to use for git status preview | file path       |
+| `FZF_PACKAGE_PREVIEW_CMD`    | Command to use for package preview    | package name    |
 
 ## Custom Keybindings
 
