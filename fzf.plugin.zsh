@@ -40,14 +40,14 @@ fi
 # To override keybindings in your .zshrc, declare FZF_KEYBINDINGS before sourcing:
 # typeset -gA FZF_KEYBINDINGS
 (( ${+FZF_KEYBINDINGS} )) || typeset -gA FZF_KEYBINDINGS
-: ${FZF_KEYBINDINGS[fzf-file-widget]:='^[^F'}
-: ${FZF_KEYBINDINGS[fzf-history-widget]:='^R'}
-: ${FZF_KEYBINDINGS[fzf-cd-widget]:='^[c'}
-: ${FZF_KEYBINDINGS[fzf-git-log-widget]:='^[^L'}
-: ${FZF_KEYBINDINGS[fzf-git-status-widget]:='^[^S'}
-: ${FZF_KEYBINDINGS[fzf-variables-widget]:='^V'}
-: ${FZF_KEYBINDINGS[fzf-package-widget]:='^[^W'}
-: ${FZF_KEYBINDINGS[fzf-git-blame-widget]:='^[^B'}
+(( ! ${+FZF_KEYBINDINGS[fzf-file-widget]} )) && FZF_KEYBINDINGS[fzf-file-widget]='^[^F'
+(( ! ${+FZF_KEYBINDINGS[fzf-history-widget]} )) && FZF_KEYBINDINGS[fzf-history-widget]='^R'
+(( ! ${+FZF_KEYBINDINGS[fzf-cd-widget]} )) && FZF_KEYBINDINGS[fzf-cd-widget]='^[c'
+(( ! ${+FZF_KEYBINDINGS[fzf-git-log-widget]} )) && FZF_KEYBINDINGS[fzf-git-log-widget]='^[^L'
+(( ! ${+FZF_KEYBINDINGS[fzf-git-status-widget]} )) && FZF_KEYBINDINGS[fzf-git-status-widget]='^[^S'
+(( ! ${+FZF_KEYBINDINGS[fzf-variables-widget]} )) && FZF_KEYBINDINGS[fzf-variables-widget]='^V'
+(( ! ${+FZF_KEYBINDINGS[fzf-package-widget]} )) && FZF_KEYBINDINGS[fzf-package-widget]='^[^W'
+(( ! ${+FZF_KEYBINDINGS[fzf-git-blame-widget]} )) && FZF_KEYBINDINGS[fzf-git-blame-widget]='^[^B'
 
 # ------------------------------------------------------------------------------
 # Auto-discover, source, register, and bind widgets
