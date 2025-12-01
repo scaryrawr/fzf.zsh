@@ -23,7 +23,7 @@ fi
 | `Ctrl+Alt+S` | Git status search using fzf            |
 | `Ctrl+V`     | Environment variables search using fzf |
 | `Ctrl+Alt+W` | Find a package name using fzf          |
-| `Ctrl+Alt+B` | Blame search                           |
+| `Ctrl+Alt+B` | Blame search using fzf                 |
 
 ## Installation
 
@@ -120,15 +120,15 @@ FZF_KEYBINDINGS[fzf-cd-widget]=''            # Disable cd widget (empty string)
 | `fzf-git-status-widget` | `^[^S`             | Git status search using fzf            |
 | `fzf-variables-widget`  | `^V`               | Environment variables search using fzf |
 | `fzf-package-widget`    | `^[^W`             | Find a package name using fzf          |
-| `fzf-git-blame-widget`  | `^[^B`             | Blame search                           |
+| `fzf-git-blame-widget`  | `^[^B`             | Blame search using fzf                 |
 
 ### Keybinding Notation
 
-| Notation | Meaning  |
-| -------- | -------- |
-| `^`      | Ctrl     |
-| `^[`     | Alt/Meta |
-| `^[^`    | Ctrl+Alt |
+| Notation | Meaning                                                   |
+| -------- | --------------------------------------------------------- |
+| `^`      | Ctrl                                                      |
+| `^[`     | Alt/Meta (Escape sequence)                                |
+| `^[^`    | Alt/Meta followed by Ctrl (e.g., `^[^L` means Alt+Ctrl+L) |
 
 ## Adding Custom Widgets
 

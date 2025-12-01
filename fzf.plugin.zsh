@@ -8,7 +8,7 @@ FZF_PLUGIN_DIR="$(dirname "$0")"
 # Dependency check
 # ------------------------------------------------------------------------------
 if ! command -v fzf &>/dev/null; then
-	echo "fzf.zsh: fzf not found. Please install fzf to use this plugin." >&2
+	echo "fzf plugin: fzf not found. Please install fzf to use this plugin." >&2
 	return 1
 fi
 
@@ -23,8 +23,8 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---ansi --cycle --layout=reverse --b
 # ------------------------------------------------------------------------------
 for previewer in "$FZF_PLUGIN_DIR"/previewers/fzf_*; do
 	[[ -f "$previewer" ]] || continue
-	local name="${previewer:t}"                          # basename: fzf_git_blame_preview
-	local var_name="${(U)name}_CMD"                      # uppercase: FZF_GIT_BLAME_PREVIEW_CMD
+	name="${previewer:t}"                                # basename: fzf_git_blame_preview
+	var_name="${(U)name}_CMD"                            # uppercase: FZF_GIT_BLAME_PREVIEW_CMD
 	export "${var_name}=${(P)var_name:-$previewer}"      # export if not already set
 done
 
@@ -37,6 +37,9 @@ fi
 # ------------------------------------------------------------------------------
 # Default key bindings (can be overridden in FZF_KEYBINDINGS associative array)
 # ------------------------------------------------------------------------------
+# Create a global associative array for keybindings.
+# To override keybindings in your .zshrc, use the same declaration:
+# typeset -gA FZF_KEYBINDINGS
 typeset -gA FZF_KEYBINDINGS
 : ${FZF_KEYBINDINGS[fzf-file-widget]:='^[^F'}
 : ${FZF_KEYBINDINGS[fzf-history-widget]:='^R'}
@@ -57,13 +60,15 @@ for widget_file in "$FZF_PLUGIN_DIR"/widgets/fzf-*-widget.zsh; do
 	source "$widget_file"
 
 	# Extract widget name from filename: fzf-file-widget.zsh -> fzf-file-widget
-	local widget_name="${${widget_file:t}%.zsh}"
+	widget_name="${${widget_file:t}%.zsh}"
 
 	# Register as ZLE widget
 	zle -N "$widget_name"
 
 	# Bind key if configured
-	local keybind="${FZF_KEYBINDINGS[$widget_name]}"
+	# If keybind is an empty string, the widget is "disabled" (i.e., not bound to any key).
+	# This matches the documented behavior: setting an empty string disables the widget.
+	keybind="${FZF_KEYBINDINGS[$widget_name]}"
 	if [[ -n "$keybind" ]]; then
 		bindkey "$keybind" "$widget_name"
 	fi
