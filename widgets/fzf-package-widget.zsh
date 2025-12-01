@@ -7,15 +7,38 @@ fzf-package-widget() {
 	local safe_dir=${PWD//\//_}
 	local cache_dir="/tmp/fzf.zsh/$safe_dir"
 
-	local hash=''
+	# Build hash from: workspace patterns + list of workspace package files
+	# Only hash the workspace-defining parts of configs (not deps/scripts/etc)
+	local hash_input=''
+	
 	if [[ -f 'package.json' ]]; then
-		hash=$(git ls-files '*package.json' | xargs sha256sum | sha256sum | awk '{print $1}')
+		# Hash only the workspaces field (not deps, scripts, etc)
+		hash_input+=$(jq -cS '.workspaces // empty' 'package.json' 2>/dev/null)
+		# Hash the sorted list of package.json paths (not contents)
+		hash_input+=$(git ls-files '**/package.json' 2>/dev/null | sort)
+	fi
+
+	if [[ -f 'pnpm-workspace.yaml' ]]; then
+		# Hash only the packages field from pnpm workspace config
+		if (( $+commands[yq] )); then
+			hash_input+=$(yq -cS '.packages // empty' 'pnpm-workspace.yaml' 2>/dev/null)
+		else
+			# Fallback: extract packages section with grep/sed
+			hash_input+=$(grep -E "^\s+-\s+" 'pnpm-workspace.yaml' 2>/dev/null | sort)
+		fi
 	fi
 
 	if [[ -f 'Cargo.toml' ]]; then
-		local cargo_hash=$(git ls-files '*Cargo.toml' | xargs sha256sum | sha256sum | awk '{print $1}')
-		local combine="${hash}-${cargo_hash}"
-		hash=$(echo "$combine" | sha256sum | awk '{print $1}')
+		# Hash only workspace members/exclude patterns (not deps, features, etc)
+		# Extract [workspace] section's members and exclude arrays
+		hash_input+=$(grep -A 100 '^\[workspace\]' 'Cargo.toml' 2>/dev/null | grep -E '^(members|exclude)\s*=' | sort)
+		# Hash the sorted list of Cargo.toml paths (not contents)
+		hash_input+=$(git ls-files '**/Cargo.toml' 2>/dev/null | sort)
+	fi
+
+	local hash=''
+	if [[ -n "$hash_input" ]]; then
+		hash=$(echo "$hash_input" | sha256sum | awk '{print $1}')
 	fi
 
 	if [[ -z "$hash" ]]; then
