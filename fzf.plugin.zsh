@@ -29,7 +29,6 @@ for previewer in "$FZF_PLUGIN_DIR"/previewers/fzf_*; do
 done
 
 # Special case: delta for diffs
-export FZF_DIFF_PREVIEW_CMD="${FZF_DIFF_PREVIEW_CMD}"
 if [[ -z "$FZF_DIFF_PREVIEW_CMD" ]] && command -v delta &>/dev/null; then
 	export FZF_DIFF_PREVIEW_CMD="delta --paging=never"
 fi
@@ -37,10 +36,10 @@ fi
 # ------------------------------------------------------------------------------
 # Default key bindings (can be overridden in FZF_KEYBINDINGS associative array)
 # ------------------------------------------------------------------------------
-# Create a global associative array for keybindings.
-# To override keybindings in your .zshrc, use the same declaration:
+# Create a global associative array for keybindings if it doesn't exist.
+# To override keybindings in your .zshrc, declare FZF_KEYBINDINGS before sourcing:
 # typeset -gA FZF_KEYBINDINGS
-typeset -gA FZF_KEYBINDINGS
+(( ${+FZF_KEYBINDINGS} )) || typeset -gA FZF_KEYBINDINGS
 : ${FZF_KEYBINDINGS[fzf-file-widget]:='^[^F'}
 : ${FZF_KEYBINDINGS[fzf-history-widget]:='^R'}
 : ${FZF_KEYBINDINGS[fzf-cd-widget]:='^[c'}
