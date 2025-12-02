@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Preview for ripgrep results in format: file:line:column:content
+input="$1"
+
+# Extract file and line number from ripgrep output
+file=$(echo "$input" | cut -d: -f1)
+line=$(echo "$input" | cut -d: -f2)
+
+if [[ -z "$file" || ! -f "$file" ]]; then
+	echo "No file selected"
+	exit 0
+fi
+
+# Calculate line range for context (10 lines before, 20 lines after)
+start=$((line > 10 ? line - 10 : 1))
+end=$((line + 20))
+
+if command -v bat >/dev/null 2>&1; then
+	bat --style=numbers --color=always --highlight-line="$line" --line-range="$start:$end" "$file"
+else
+	# Fallback to cat with line numbers
+	sed -n "${start},${end}p" "$file" | nl -ba -v "$start"
+fi

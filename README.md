@@ -21,6 +21,7 @@ fi
 | `Alt+c`      | Change directory using fzf             |
 | `Ctrl+Alt+L` | Git log search using fzf               |
 | `Ctrl+Alt+S` | Git status search using fzf            |
+| `Ctrl+Alt+G` | Grep using fzf                         |
 | `Ctrl+V`     | Environment variables search using fzf |
 | `Ctrl+Alt+W` | Find a package name using fzf          |
 | `Ctrl+Alt+B` | Blame search using fzf                 |

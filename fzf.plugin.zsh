@@ -55,6 +55,7 @@ fi
 (( ! ${+FZF_KEYBINDINGS[fzf-cd-widget]} )) && FZF_KEYBINDINGS[fzf-cd-widget]='^[c'
 (( ! ${+FZF_KEYBINDINGS[fzf-git-log-widget]} )) && FZF_KEYBINDINGS[fzf-git-log-widget]='^[^L'
 (( ! ${+FZF_KEYBINDINGS[fzf-git-status-widget]} )) && FZF_KEYBINDINGS[fzf-git-status-widget]='^[^S'
+(( ! ${+FZF_KEYBINDINGS[fzf-search-widget]} )) && FZF_KEYBINDINGS[fzf-search-widget]='^[^g'
 (( ! ${+FZF_KEYBINDINGS[fzf-variables-widget]} )) && FZF_KEYBINDINGS[fzf-variables-widget]='^V'
 (( ! ${+FZF_KEYBINDINGS[fzf-package-widget]} )) && FZF_KEYBINDINGS[fzf-package-widget]='^[^W'
 (( ! ${+FZF_KEYBINDINGS[fzf-git-blame-widget]} )) && FZF_KEYBINDINGS[fzf-git-blame-widget]='^[^B'
