@@ -5,10 +5,7 @@ fzf-package-widget() {
 	fi
 
 	local packages=$(rg --no-heading -N --glob 'package.json' '"name"' 2>/dev/null | sed -E 's|(.*):.*"name": *"([^"]+)".*|{"name":"\2","path":"\1"}|' | jq -s .)
-	local crates=$(fd -a Cargo.toml -x sh -c '
-			name=$(grep -m1 "^name" "$1" | sed -E "s/name *= *\"([^\"]+)\"/\1/")
-			[ -n "$name" ] && echo "{\"name\":\"$name\",\"path\":\"$1\"}"
-		' _ {} | jq -s .)
+	local crates=$(cargo metadata --format-version 1 2>/dev/null | jq -c '.packages | map(select(.id | startswith("path+file")) | {name: .name, path: .manifest_path})')
 
 	packages=${packages:-'[]'}
 	crates=${crates:-'[]'}
