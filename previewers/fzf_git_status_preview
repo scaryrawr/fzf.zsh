@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 status_line="$1"
-staged_status="${status_line:0:1}"
-unstaged_status="${status_line:1:1}"
-file="${status_line:3}"
+staged_status="${status_line[1]}"
+unstaged_status="${status_line[2]}"
+file="${status_line[4,-1]}"
 if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
 	if [[ "$staged_status" == "M" ]]; then
 		echo 'Staged changes:'

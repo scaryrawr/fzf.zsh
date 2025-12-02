@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 commit_hash=${1//^/}
 # Check if FZF_DIFF_PREVIEW_CMD is set
