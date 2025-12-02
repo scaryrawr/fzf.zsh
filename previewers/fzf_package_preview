@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 target_name=$1
-cache_file=$2
 
-locations=$(jq -r ".[] | select(.name == \"$target_name\") | .path" "$cache_file")
+packages=$(rg --no-heading -N --glob 'package.json' '"name"' 2>/dev/null | sed -E 's|(.*):.*"name": *"([^"]+)".*|{"name":"\2","path":"\1"}|' | jq -s .)
+crates=$(cargo metadata --format-version 1 2>/dev/null | jq -c '.packages | map(select(.id | startswith("path+file")) | {name: .name, path: .manifest_path})')
+
+locations=$(echo "$packages" "$crates" | jq -s ".[0] + .[1] | .[] | select(.name == \"$target_name\") | .path" -r)
 
 if [ "$(echo "$locations" | wc -l)" -gt 1 ]; then
 	printf "\033[33mWarning: More than one location found for %s\033[0m\n" "$target_name"
 fi
 
-for location in $locations; do
+while IFS= read -r location; do
 	echo "$location"
 	$FZF_PREVIEW_CMD "$location"
-done
+done <<< "$locations"

@@ -76,12 +76,13 @@ git clone https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf
 ### Required
 
 - [fzf](https://github.com/junegunn/fzf)
+- [fd](https://github.com/sharkdp/fd) - Fast file finder
+- [ripgrep](https://github.com/BurntSushi/ripgrep) - Fast text search
 
 ### Optional
 
 - [chafa](https://github.com/hpjansson/chafa) - Image preview
 - [bat](https://github.com/sharkdp/bat) - cat with syntax highlighting
-- [fd](https://github.com/sharkdp/fd) - Alternative to `find`
 - [eza](https://github.com/eza-community/eza) - Alternative to `ls`
 
 ## Customizable Variables
