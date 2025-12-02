@@ -1,5 +1,4 @@
-#!/usr/bin/env zsh
-
+#!/usr/bin/env bash
 file=$1
 extension="${file##*.}"
 
@@ -12,7 +11,7 @@ run_git_blame() {
 }
 
 # Check if the file command is available
-if (( $+commands[file] )); then
+if command -v file >/dev/null 2>&1; then
 	# Check if the file is binary or an image
 	if file --mime-type "$file" | grep -qE 'application/octet-stream|image/'; then
 		"$FZF_PREVIEW_CMD" "$file"
