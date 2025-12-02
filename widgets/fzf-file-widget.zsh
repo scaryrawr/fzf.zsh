@@ -1,13 +1,5 @@
 fzf_find_files() {
-	if (( $+commands[fd] )); then
-		fd --type file --color=always
-	else
-		if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-			find . -type f ! -path '*/.*' -print 2>/dev/null | grep -vFf <(git ls-files --others --ignored --exclude-standard --directory)
-		else
-			find . -type f ! -path '*/.*' -print 2>/dev/null
-		fi
-	fi
+	fd --type file --color=always
 }
 
 # File search using fzf

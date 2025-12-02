@@ -1,39 +1,20 @@
 #!/usr/bin/env bash
 
 target_name=$1
-locations=()
 
-# Find package.json files with matching name
-if command -v rg &>/dev/null; then
-	while IFS=: read -r path _; do
-		locations+=("$path")
-	done < <(rg -l --glob 'package.json' "\"name\":\\s*\"$target_name\"" 2>/dev/null)
-elif git rev-parse --is-inside-work-tree &>/dev/null; then
-	while read -r path; do
-		if grep -q "\"name\":\\s*\"$target_name\"" "$path" 2>/dev/null; then
-			locations+=("$path")
-		fi
-	done < <(git ls-files --cached --others --exclude-standard '*package.json')
-fi
+packages=$(rg --no-heading -N --glob 'package.json' '"name"' 2>/dev/null | sed -E 's|(.*):.*"name": *"([^"]+)".*|{"name":"\2","path":"\1"}|' | jq -s .)
+crates=$(fd -a Cargo.toml -x sh -c '
+		name=$(grep -m1 "^name" "$1" | sed -E "s/name *= *\"([^\"]+)\"/\1/")
+		[ -n "$name" ] && echo "{\"name\":\"$name\",\"path\":\"$1\"}"
+	' _ {} | jq -s .)
 
-# Find Cargo.toml files with matching name
-if command -v rg &>/dev/null; then
-	while IFS=: read -r path _; do
-		locations+=("$path")
-	done < <(rg -l --glob 'Cargo.toml' "^name\\s*=\\s*\"$target_name\"" 2>/dev/null)
-elif git rev-parse --is-inside-work-tree &>/dev/null; then
-	while read -r path; do
-		if grep -q "^name\\s*=\\s*\"$target_name\"" "$path" 2>/dev/null; then
-			locations+=("$path")
-		fi
-	done < <(git ls-files --cached --others --exclude-standard '*Cargo.toml')
-fi
+locations=$(echo "$packages" "$crates" | jq -s ".[0] + .[1] | .[] | select(.name == \"$target_name\") | .path" -r)
 
-if [ "${#locations[@]}" -gt 1 ]; then
+if [ "$(echo "$locations" | wc -l)" -gt 1 ]; then
 	printf "\033[33mWarning: More than one location found for %s\033[0m\n" "$target_name"
 fi
 
-for location in "${locations[@]}"; do
+while IFS= read -r location; do
 	echo "$location"
 	$FZF_PREVIEW_CMD "$location"
-done
+done <<< "$locations"

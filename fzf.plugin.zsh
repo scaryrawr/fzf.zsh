@@ -12,6 +12,16 @@ if ! (( $+commands[fzf] )); then
 	return 1
 fi
 
+if ! (( $+commands[fd] )); then
+	echo "fzf plugin: fd not found. Please install fd to use this plugin." >&2
+	return 1
+fi
+
+if ! (( $+commands[rg] )); then
+	echo "fzf plugin: rg (ripgrep) not found. Please install ripgrep to use this plugin." >&2
+	return 1
+fi
+
 # ------------------------------------------------------------------------------
 # Default options (can be overridden before sourcing)
 # ------------------------------------------------------------------------------
