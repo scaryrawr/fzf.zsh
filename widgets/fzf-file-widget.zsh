@@ -9,7 +9,7 @@ fzf-file-widget() {
 	if [[ "$LBUFFER" =~ [^[:space:]]$ ]]; then
 		hint="${LBUFFER##* }"
 	fi
-	selected_files=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --preview-window=right:60% --query="$hint" --multi | tr '\n' ' ')
+	selected_files=$(fzf_find_files | fzf --preview "$FZF_PREVIEW_CMD {}" --height 60% --preview-window=right:60% --query="$hint" --multi --bind="ctrl-o:execute(${EDITOR:-vim} {})" | tr '\n' ' ')
 	if [[ -n "$selected_files" ]]; then
 		LBUFFER="${LBUFFER%$hint}$selected_files"
 	fi

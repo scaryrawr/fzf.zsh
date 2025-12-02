@@ -11,7 +11,7 @@ fzf-package-widget() {
 	crates=${crates:-'[]'}
 	local packages_info=$(echo "$packages" "$crates" | jq -s '.[0] + .[1]')
 
-	local selected_packages=$(echo "$packages_info" | jq -r '.[].name' 2>/dev/null | awk '!seen[$0]++' | fzf --height 60% --prompt="Select package(s): " --preview "$FZF_PACKAGE_PREVIEW_CMD {} " --query="$hint" --multi | tr '\n' ' ')
+	local selected_packages=$(echo "$packages_info" | jq -r '.[] | "\(.name):\(.path)"' 2>/dev/null | fzf --height 60% --prompt="Select package(s): " --preview "$FZF_PACKAGE_PREVIEW_CMD {1} {2}" --query="$hint" --multi --delimiter=':' --bind="ctrl-o:execute(${EDITOR:-vim} {2})" | cut -f1 | tr '\n' ' ')
 
 	if [[ -n "$selected_packages" ]]; then
 		LBUFFER="${LBUFFER%$hint}$selected_packages"
