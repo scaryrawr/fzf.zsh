@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 commit=$1
 if [ -n "$FZF_DIFF_PREVIEW_CMD" ]; then
