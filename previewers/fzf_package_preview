@@ -3,7 +3,5 @@
 target_name=$1
 target_path=$2
 
-while IFS= read -r location; do
-	echo "$target_name"
-	$FZF_PREVIEW_CMD "$target_path"
-done <<< "$locations"
+echo "$target_name"
+$FZF_PREVIEW_CMD "$target_path"
