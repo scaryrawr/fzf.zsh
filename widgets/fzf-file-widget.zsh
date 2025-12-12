@@ -1,5 +1,5 @@
 fzf_find_files() {
-	fd --type file --color=always
+	fd $FZF_FD_OPTS --type file --color=always
 }
 
 # File search using fzf

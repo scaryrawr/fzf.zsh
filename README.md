@@ -93,6 +93,7 @@ You can customize the behavior of the fzf plugin by setting the following enviro
 | Variable Name                | Description                           | Passed Argument |
 | ---------------------------- | ------------------------------------- | --------------- |
 | `FZF_DEFAULT_OPTS`           | Default options for fzf               | N/A             |
+| `FZF_FD_OPTS`                | Additional options to pass to fd      | N/A             |
 | `FZF_PREVIEW_CMD`            | Command to use for file preview       | file path       |
 | `FZF_GIT_BLAME_PREVIEW_CMD`  | Command to use for git blame preview  | file path       |
 | `FZF_GIT_COMMIT_PREVIEW_CMD` | Command to use for git commit preview | commit          |
