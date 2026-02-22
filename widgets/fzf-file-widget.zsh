@@ -1,5 +1,5 @@
 fzf_find_files() {
-	fd $FZF_FD_OPTS --hidden --type file --color=always
+	fd $FZF_FD_OPTS --hidden --exclude .git --exclude .hg --exclude .svn --type file --color=always
 }
 
 # File search using fzf
